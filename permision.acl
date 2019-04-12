@@ -1,0 +1,75 @@
+/**
+ * Access control rules for tutorial-network
+ */
+
+
+rule CompanySeeUpdateThemselvesOnly {
+  description: "Company can see and update their own record only"
+  participant(t): "org.example.mynetwork.CompanyName"
+  operation: READ, UPDATE
+  resource(v): "org.example.mynetwork.CompanyName"
+  condition: (v.getIdentifier() == t.getIdentifier())
+  action: ALLOW
+}
+
+rule CompanySeeTheirEmployees {
+  description: "Company can see/work with their own Employees"
+  participant(t): "org.example.mynetwork.CompanyName"
+  operation: ALL
+  resource(c): "org.example.mynetwork.Employee"
+  condition: (c.owner.getIdentifier() == t.getIdentifier())
+  action: ALLOW
+}
+
+rule CompanySeeOwnHistoryOnly {
+  description: "Company should be able to see the history of their own transactions only"
+  participant(t): "org.example.mynetwork.CompanyName"
+  operation: READ
+  resource(v): "org.hyperledger.composer.system.HistorianRecord"
+  condition: (v.participantInvoking.getIdentifier() != t.getIdentifier())
+  action: DENY
+}
+
+
+rule HitachicannotSale {
+  description: "Hitachi - 7202 cannot sale the employee"
+  participant(t): "org.example.mynetwork.CompanyName"
+  operation: READ
+  resource(v): "org.example.mynetwork.Sale"
+  condition: (7202 == t.getIdentifier())
+  action: DENY
+}
+
+
+rule HitachicanSeeAllemployee {
+  description: "Hitachi - 7202 can see all the employees"
+  participant(t): "org.example.mynetwork.CompanyName"
+  operation: READ
+  resource(v): "org.example.mynetwork.Employee"
+  condition: (7202 == t.getIdentifier())
+  action: ALLOW
+}
+
+rule SystemACL {
+  description:  "System ACL to permit all access"
+  participant: "ANY"
+  operation: ALL
+  resource: "org.hyperledger.composer.system.**"
+  action: ALLOW
+}
+
+rule NetworkAdminUser {
+    description: "Grant business network administrators full access to user resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "**"
+    action: ALLOW
+}
+
+rule NetworkAdminSystem {
+    description: "Grant business network administrators full access to system resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.**"
+    action: ALLOW
+}
