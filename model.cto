@@ -10,7 +10,8 @@ asset Employee identified by employeeId {
   o String employeeSalary
   o String employeeDiv
   o Employeetype employeetype
-  --> CompanyName owner
+  --> CompanyName currentCompany
+  --> CompanyName parentCompany
 }
 
 enum Employeetype {
