@@ -17,7 +17,17 @@ rule CompanySeeTheirEmployees {
   participant(t): "org.example.mynetwork.CompanyName"
   operation: ALL
   resource(c): "org.example.mynetwork.Employee"
-  condition: (c.owner.getIdentifier() == t.getIdentifier())
+  condition: (c.currentCompany.getIdentifier() == t.getIdentifier())
+  action: ALLOW
+}
+ 
+
+rule CompanySendContractEmployeesOnly {
+  description: "Company can send their contract Employees"
+  participant(t): "org.example.mynetwork.CompanyName"
+  operation: ALL
+  resource(c): "org.example.mynetwork.Sale"
+  condition: (c.employee.employeetype.getIdentifier() == "CONTRACT")
   action: ALLOW
 }
 
@@ -31,24 +41,7 @@ rule CompanySeeOwnHistoryOnly {
 }
 
 
-rule HitachicannotSale {
-  description: "Hitachi - 7202 cannot sale the employee"
-  participant(t): "org.example.mynetwork.CompanyName"
-  operation: READ
-  resource(v): "org.example.mynetwork.Sale"
-  condition: (7202 == t.getIdentifier())
-  action: DENY
-}
 
-
-rule HitachicanSeeAllemployee {
-  description: "Hitachi - 7202 can see all the employees"
-  participant(t): "org.example.mynetwork.CompanyName"
-  operation: READ
-  resource(v): "org.example.mynetwork.Employee"
-  condition: (7202 == t.getIdentifier())
-  action: ALLOW
-}
 
 rule SystemACL {
   description:  "System ACL to permit all access"
