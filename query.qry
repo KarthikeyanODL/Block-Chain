@@ -32,11 +32,11 @@ query selectHitachiEmployees {
   description: "Select Hitachi employees"
   statement:
       SELECT org.example.mynetwork.Employee
-          WHERE (employeetype == "PERMANANT")
+          WHERE (parentCompany == "Hitachi")
 }
 query selectHumanEmployees {
   description: "Select Human employees"
   statement:
       SELECT org.example.mynetwork.Employee
-          WHERE (owner == "Human")
+          WHERE (parentCompany == "Human")
 }
