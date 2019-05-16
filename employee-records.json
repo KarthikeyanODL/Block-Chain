@@ -1,0 +1,111 @@
+[
+ {
+"employeeId":100,
+"employeeName":"karthik",
+"employeeType":"contract",
+"parentCompany":"human",
+"currentCompany":"human",
+"salary":5000,
+"workingHours":9.3
+ },
+
+ {
+"employeeId":101,
+"employeeName":"ov",
+"employeeType":"contract",
+"parentCompany":"human",
+"currentCompany":"human",
+"salary":5000,
+"workingHours":9.3
+ },
+
+ {
+"employeeId":102,
+"employeeName":"ovkarthik",
+"employeeType":"contract",
+"parentCompany":"human",
+"currentCompany":"human",
+"salary":5000,
+"workingHours":9.3
+ },
+
+ {
+"employeeId":103,
+"employeeName":"nirosh",
+"employeeType":"contract",
+"parentCompany":"human",
+"currentCompany":"human",
+"salary":5000,
+"workingHours":9.3
+ },
+
+ {
+"employeeId":104,
+"employeeName":"niroshkarthik",
+"employeeType":"contract",
+"parentCompany":"hitachi",
+"currentCompany":"hitachi",
+"salary":5000,
+"workingHours":9.3
+ },
+
+ {
+"employeeId":105,
+"employeeName":"karthikSandha",
+"employeeType":"contract",
+"parentCompany":"hitachi",
+"currentCompany":"hitachi",
+"salary":5000,
+"workingHours":9.3
+ },
+
+ {
+"employeeId":106,
+"employeeName":"maan",
+"employeeType":"contract",
+"parentCompany":"hitachi",
+"currentCompany":"hitachiUs",
+"salary":5000,
+"workingHours":9.3
+ },
+
+ {
+"employeeId":107,
+"employeeName":"lakshmi",
+"employeeType":"contract",
+"parentCompany":"hitachi",
+"currentCompany":"hitachi",
+"salary":5000,
+"workingHours":9.3
+ },
+
+ {
+"employeeId":108,
+"employeeName":"hepsi",
+"employeeType":"contract",
+"parentCompany":"human",
+"currentCompany":"hitachi",
+"salary":5000,
+"workingHours":9.3
+ },
+
+ {
+"employeeId":109,
+"employeeName":"entangam",
+"employeeType":"contract",
+"parentCompany":"human",
+"currentCompany":"hitachi",
+"salary":5000,
+"workingHours":9.3
+ },
+ {
+"employeeId":110,
+"employeeName":"pro",
+"employeeType":"contract",
+"parentCompany":"hitachi",
+"currentCompany":"hitachi",
+"salary":5000,
+"workingHours":9.3
+ }
+
+]
