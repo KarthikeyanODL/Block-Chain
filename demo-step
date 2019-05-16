@@ -1,0 +1,197 @@
+
+##################################################################################
+ Chain code install & instantiate steps
+##################################################################################
+
+Env setup:
+-----------
+ 
+dev-init.sh
+reset-chain-env.sh
+source set-env.sh acme
+set-chain-env.sh  -n empcc -v 1.0 -p contract -c '{"Args": ["init"]}'
+show-env.sh
+
+chain.sh install
+chain.sh instantiate
+
+Transactions
+--------------
+1. addEmployee
+set-chain-env.sh -i '{"Args":["addEmployee"]}'
+chain.sh invoke
+
+2. getEmployees
+set-chain-env.sh -q '{"Args":["getEmployees"]}'
+chain.sh query
+
+3. CreateEmployee
+ set-chain-env.sh -i '{"Args":["createEmployee","77","ov","10000","9","permanent","hitachi","nissan"]}'
+ chain.sh invoke
+
+3. set-chain-env.sh -i '{"Args":["sendEmployee","1","human","hitachi"]}'
+chain.sh invoke
+
+conditions
+  i.    Invalid arguments, Trying to transfer in the same company
+        set-chain-env.sh -i '{"Args":["sendEmployee","1","human","human"]}'
+		chain.sh invoke
+  
+  ii.   Only Human employees can be transferred
+        set-chain-env.sh -i '{"Args":["sendEmployee","4","hitachi","human"]}'
+		chain.sh invoke
+		
+  iii.  Only contract employees can be transferred
+        set-chain-env.sh -i '{"Args":["sendEmployee","3","human","hitachi"]}'
+		chain.sh invoke
+
+  iv.   This employee is not currently working in " + args[1] + " company
+        set-chain-env.sh -i '{"Args":["sendEmployee","2","hitachi","human"]}'
+		chain.sh invoke
+
+4. getEmployees with pagination concept
+
+// arguments : start, end, pageSize
+set-chain-env.sh -q '{"Args": ["GetEmployeesByRangeWithPagination", "1","5","2"]}'
+chain.sh query
+
+
+5. History 
+------------
+
+set-chain-env.sh  -q '{"Args": ["getEmployeeTxHistory", "1"]}'
+chain.sh query
+
+
+6. Endorsement policy:
+----------------------
+<terminal1>
+
+source set-env.sh acme
+//set-chain-env.sh -n empcc -v 2.0 -p contract
+//chain.sh install
+set-chain-env.sh -P "OR('BudgetMSP.member')"
+chain.sh upgrade-auto
+
+
+
+<terminal2>
+Event listener/ subscriber
+source set-env.sh acme
+source cc.env.sh
+events.sh -t chaincode -n empcc -e sendEmployee -c airlinechannel
+
+
+set-chain-env.sh -i '{"Args":["sendEmployee","1","hitachi","human"]}'
+chain.sh invoke
+<<EP failed>>
+
+<terminal3>
+<<setting in budget peer>>
+source set-env.sh budget
+chain.sh install
+
+<terminal1>back to acme setup
+source set-env.sh acme
+source cc.env.sh
+peer chaincode invoke -o "$ORDERER_ADDRESS" -C "$CC_CHANNEL_ID" -n "$CC_NAME" -c "$CC_INVOKE_ARGS" --peerAddresses budget-peer1.budget.com:8051
+
+
+7. Invoke the SetSalary as Human & Query - Private Data Collection
+------------------------------
+reset-chain-env.sh
+
+set-chain-env.sh  -n empcc -v 4.0 -p contract -c '{"Args": ["init"]}' -C airlinechannel
+set-chain-env.sh -R pcollection.json
+source set-env.sh acme
+chain.sh upgrade-auto
+
+source set-env.sh budget
+chain.sh install
+
+source set-env.sh acme
+set-chain-env.sh -i '{"Args": ["SetSalary","HumanHitachiContract", "33", "70000"]}'
+chain.sh invoke
+
+set-chain-env.sh -i '{"Args": ["SetSalary","HumanPrivate", "33", "50000"]}'
+chain.sh invoke
+
+set-chain-env.sh -q '{"Args": ["GetSalary", "33"]}'
+chain.sh query
+
+source set-env.sh budget
+chain.sh query
+
+----------------------------------------
+8. CompositeKey
+
+set-chain-env.sh -i '{"Args": ["AddEmployeeWithCompositeKey", "33"]}'
+chain.sh invoke
+
+set-chain-env.sh -i '{"Args": ["GetEmployeesByPartialCompositeKey"]}'
+chain.sh invoke
+
+set-chain-env.sh -i '{"Args": ["GetEmployeesByPartialCompositeKey","human","hitachi","contract"]}'
+chain.sh invoke
+
+objectType = "ParentCompany~CurrentCompany~EmployeeType"
+
+----------------------------------------------
+9. Rich Query 
+
+dev-init.sh  -s
+set-chain-env.sh  -n empcc -v 2.0 -p contract -c '{"Args": ["init"]}'
+source set-env.sh acme
+
+chain.sh install
+chain.sh instantiate
+
+To add more employee details run the below command
+./add2000employees.sh
+
+<<Getquery>>
+set-chain-env.sh -q '{"Args": ["GetEmployeeById","1"]}'
+chain.sh query
+
+
+<<User passed query : GetQueryResult>>
+set-chain-env.sh -q '{"Args":["ExecuteUserQuery","{\"selector\":{\"employeeType\": \"contract\"}}"]}'
+chain.sh query
+
+<<With Pagination :>>
+set-chain-env.sh -q '{"Args":["GetEmployeeByCompany","{\"selector\":{\"parentCompany\": \"hitachi\"}}"]}'
+chain.sh query
+--------------------------------------------------------------------------------
+10. Index
+
+
+<<without index>>
+set-chain-env.sh -q '{"Args":["ExecuteUserQuery","{\"selector\":{\"employeeType\": \"contract\"}}"]}'
+time chain.sh query
+
+real    0m0.283s
+user    0m0.072s
+sys     0m0.008s
+
+<<With index>>
+add index inside META-INF folder
+
+chain.sh upgrade-auto
+set-chain-env.sh -q '{"Args":["ExecuteUserQuery","{\"selector\":{\"employeeType\": \"contract\"},\"use_index\": [ \"indexOnempIdandType\" ]}"]}'
+time chain.sh query
+real    0m0.221s
+user    0m0.060s
+sys     0m0.020s
+
+
+set-chain-env.sh -q '{"Args":["ExecuteUserQuery","{\"selector\":{\"employeeName\": \"karthik\"},\"use_index\": [ \"indexOnempIdandName\" ]}"]}'
+time chain.sh query
+--------------------------------------------------------------
+
+couchdb
+docker exec -it acme-peer1.couchdb bash
+curl -X GET http://127.0.0.1:5984/_all_dbs
+curl -X GET http://127.0.0.1:5984/airlinechannel_couchdb/1
+
+
+
