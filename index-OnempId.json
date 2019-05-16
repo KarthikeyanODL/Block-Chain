@@ -1,0 +1,12 @@
+{
+    "index": {
+        "fields": [
+            "docType",
+            "employeeId",
+            "employeeType"
+        ]
+    },
+    "ddoc": "indexOnempIdandType",
+    "name": "indexOnempIdandType",
+    "type": "json"
+}
